@@ -3,8 +3,8 @@ package map;
 import java.util.*;
 
 public class Graph {
-    private HashSet<Node> nodes;
-    private HashSet<Edge> edges;
+    public HashSet<Node> nodes;
+    public HashSet<Edge> edges;
 
     public Graph() {
         this.nodes = new HashSet<>();
