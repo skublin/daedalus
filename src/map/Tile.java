@@ -35,7 +35,10 @@ public class Tile extends Node {
         this.setWall(wall, true);
     }
 
-    public void updateTileString() {
-
+    public void updateTileString(Integer k) {
+        Character[][] m = this.getParent().getMap();
+        int i = 2 * this.getPosition().y + 1;
+        int j = 2 * this.getPosition().x + 2 * k + 2;
+        m[i][j] = 'X';
     }
 }

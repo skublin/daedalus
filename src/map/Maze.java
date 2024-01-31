@@ -11,6 +11,8 @@ public class Maze extends Graph {
     public Character[][] map;
     private final Integer size;    // Map is always square (e.g. 6x6 or 10x10) (!)
     private final Integer seed;    // TODO: seed for random operations (?)
+    private final Integer rows;
+    private final Integer columns;
 
     public Maze(Integer size, Integer seed) {
         super();
@@ -18,8 +20,19 @@ public class Maze extends Graph {
         this.map = new Character[2*size + 1][4*size + 1];
         this.size = size;
         this.seed = seed;
+        this.rows = 2*size + 1;
+        this.columns = 4*size + 1;
+        this.fillClearMap();
     }
 
+    private void fillClearMap() {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++)
+                map[i][j] = ' ';
+        }
+    }
+
+    @Override
     public Character[][] getMap() {
         return map;
     }
@@ -29,6 +42,7 @@ public class Maze extends Graph {
     }
 
     public void generateMaze() {
+        // TODO: set random seed if given null to constructor.
         this.generateNodes();
         this.setStartEnd();
         this.DFS();
@@ -90,26 +104,56 @@ public class Maze extends Graph {
 
     }
 
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < size; i++) {
-            for (int k = 0; k < 2; k++) {
-                for (int j = 0; j < size; j++) {
-                    Tile tile = nodes[i][j];
+    public void drawTest() {
+        /*for (int i = 0; i < 2*size + 1; i++) {
+            for (int j = 0; j < 4*size + 1; j++)
+                map[i][j] = 'X';
+        }*/
 
+        // draw odd lines
+        for (int i = 0; i < rows; i += 2) {
+            // draw corners (+) and horizontal walls (---)
+            for (int j = 0; j < columns; j += 4) {
+                map[i][j] = '+';
 
+                for (int k = 1; k < 4; k++) {
+                    if (j + k < columns)
+                        map[i][j + k] = '-';
                 }
-                result.append("\n");
             }
         }
+        // draw even lines
+        for (int i = 1; i < rows; i += 2) {
+            for (int j = 0; j < columns; j += 4)
+                map[i][j] = '|';
+        }
+    }
+
+    @Override
+    public String toString() {
+        this.drawTest();
+
+        for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    Tile tile = nodes[i][j];
+                    tile.updateTileString(i);
+                }
+        }
+
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++)
+                result.append(map[i][j]);
+            result.append('\n');
+        }
+
         return result.toString();
     }
 
     public static void main(String[] args) {
         System.out.println("Test Maze generation with DFS...");
 
-        Maze m = new Maze(8, null);    // seed set to null results in random seed used (!)
+        Maze m = new Maze(6, null);    // Seed set to null results in random seed use. (!)
 
         m.generateMaze();
 

@@ -55,10 +55,6 @@ public class Graph {
         n2.removeNeighbour(n1);
     }
 
-    public void getGraphMatrix() {
-
-    }
-
     public void showGraph() {
         System.out.println(this);
         for (Node n : nodes)
@@ -70,6 +66,11 @@ public class Graph {
     @Override
     public String toString() {
         return String.format("Graph with " + nodes.size() + " node(s) and " + edges.size() + " edge(s).");
+    }
+
+    public Character[][] getMap() {
+        // Not necessary, just to override in Maze class and use by Tile objects. (!)
+        return new Character[1][1];
     }
 
     public static void main(String[] args) {
