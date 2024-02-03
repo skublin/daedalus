@@ -8,12 +8,10 @@ import java.util.Map;
 public class Game {
     private final Map<DifficultyEnum, Integer> difficultySizeMap = new HashMap<>();
     private final DifficultyEnum difficulty;
-    private final Integer seed;
     private Maze map;
 
-    public Game(DifficultyEnum difficulty, Integer seed) {
+    public Game(DifficultyEnum difficulty) {
         this.difficulty = difficulty;
-        this.seed = seed;
 
         difficultySizeMap.put(DifficultyEnum.EASY, 6);
         difficultySizeMap.put(DifficultyEnum.NORMAL, 8);
@@ -25,7 +23,7 @@ public class Game {
 
     private void prepareMap() {
         Integer size = difficultySizeMap.get(difficulty);
-        map = new Maze(size, seed);
+        map = new Maze(size);
         map.generateMaze();
     }
 }

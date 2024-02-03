@@ -3,16 +3,18 @@ package map;
 import java.util.*;
 
 public class Node {
-    private Graph parent;
-    private HashSet<Edge> edges;
-    private HashSet<Node> neighbours;
-    private Position<Integer, Integer> position;
+    public Graph parent;
+    public HashSet<Edge> edges;
+    public HashSet<Node> neighbours;
+    public Position<Integer, Integer> position;
+    public Boolean isVisited;
 
     public Node(Graph parent, Position<Integer, Integer> position) {
         this.parent = parent;
         this.edges = new HashSet<>();
         this.neighbours = new HashSet<>();
         this.position = position;
+        this.isVisited = false;
     }
 
     public Graph getParent() {
@@ -21,10 +23,6 @@ public class Node {
 
     public HashSet<Edge> getEdges() {
         return edges;
-    }
-
-    public HashSet<Node> getNeighbours() {
-        return neighbours;
     }
 
     public Position<Integer, Integer> getPosition() {
@@ -45,6 +43,14 @@ public class Node {
 
     public void removeEdge(Edge edge) {
         this.edges.remove(edge);
+    }
+
+    public void setAsVisited() {
+        this.isVisited = true;
+    }
+
+    public HashSet<Node> getNeighbours() {
+        return neighbours;
     }
 
     @Override
