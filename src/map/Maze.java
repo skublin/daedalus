@@ -2,7 +2,6 @@ package map;
 
 import java.util.Random;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -14,7 +13,6 @@ public class Maze extends Graph {
     private final Integer columns;
     public Tile start;
     public Tile end;
-    public HashSet<Tile> notVisited;
 
     public Maze(Integer size) {
         super();
@@ -25,7 +23,6 @@ public class Maze extends Graph {
         this.columns = 4*size + 1;
         this.start = null;
         this.end = null;
-        this.notVisited = new HashSet<>();
         this.setEmptyMap();
     }
 
@@ -71,9 +68,7 @@ public class Maze extends Graph {
     public void generateMaze() {
         this.generateNodes();
         this.setStartEnd();
-        //this.DFS();
         this.recursiveDFS(start);
-        System.out.println("Start position = (" + start.getPosition().x + ", " + start.getPosition().y + ") and random neighbour position = ("+ end.getPosition().x + ", " + end.getPosition().y + ")");
     }
 
     private void generateNodes() {
@@ -82,10 +77,9 @@ public class Maze extends Graph {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 // Tile position is (i, j), where i - row index, j - column index.
+                // While creating Walls, false means there is a wall, true means there is empty space.
                 Tile tile = new Tile(this, new Position<>(i, j), new Walls<>(false, false, false, false));
                 this.addTile(tile, i, j);
-                this.notVisited.add(tile);
-
                 // Set WEST and EAST border (null value).
                 if (i == 0) tile.setWall('W', null);
                 if (i == size - 1) tile.setWall('E', null);
@@ -94,7 +88,6 @@ public class Maze extends Graph {
                 if (j == size - 1) tile.setWall('S', null);
             }
         }
-
         this.addTilesNeighbours();
     }
 
@@ -105,7 +98,7 @@ public class Maze extends Graph {
                 int x = t.getPosition().x;
                 int y = t.getPosition().y;
 
-                if (y - 1 >= 0) t.addNeighbour(nodes[x][y - 1], true);    // TODO: create edges (true)?
+                if (y - 1 >= 0) t.addNeighbour(nodes[x][y - 1], true);
                 if (y + 1 < size) t.addNeighbour(nodes[x][y + 1], true);
                 if (x + 1 < size) t.addNeighbour(nodes[x + 1][y], true);
                 if (x - 1 >= 0) t.addNeighbour(nodes[x - 1][y], true);
@@ -152,14 +145,15 @@ public class Maze extends Graph {
 
         if (te != null) te.setAsEnd(endDirection);
         this.end = te;
+        this.removeWall(end, endDirection);
     }
 
     private void removeWall(Tile tile, Character direction) {
         tile.setWall(direction, true);
-        // (j, i) - tile's middle position
+        // (j, i) - tile's middle position.
         int i = 1 + 2 * tile.getPosition().y;
         int j = 2 + 4 * tile.getPosition().x;
-        //System.out.println("(y, x) = " + "(" + i + ", " + j + ")");
+
         switch (direction) {
             case 'W' -> map[i][j - 2] = ' ';
             case 'E' -> map[i][j + 2] = ' ';
@@ -176,28 +170,13 @@ public class Maze extends Graph {
         }
     }
 
-    public void DFS() {
-        // first node is always start node
-        Tile current = start;
-        Tile next;
-
-        //this.start.setAsVisited();
-        //this.notVisited.remove(start);
-
-        //Tile rn = this.randomNeighbour(start);
-
-        //this.moveDFS(start, rn);
-        //rn.setAsVisited();
-        //System.out.println("Start position = (" + start.getPosition().x + ", " + start.getPosition().y + ") and random neighbour position = ("+ rn.getPosition().x + ", " + rn.getPosition().y + ")");
-    }
-
     public void recursiveDFS(Tile current) {
         current.isVisited = true;
         List<int[]> directions = new ArrayList<>();
-        directions.add(new int[]{0, -1}); // up
-        directions.add(new int[]{0, 1}); // down
-        directions.add(new int[]{-1, 0}); // left
-        directions.add(new int[]{1, 0}); // right
+        directions.add(new int[]{0, -1});    // up
+        directions.add(new int[]{0, 1});    // down
+        directions.add(new int[]{-1, 0});    // left
+        directions.add(new int[]{1, 0});    // right
 
         Collections.shuffle(directions);
 
@@ -220,35 +199,33 @@ public class Maze extends Graph {
         int dy = s.getPosition().y - e.getPosition().y;
 
         if (dx == 0) {
-            if (dy > 0 ) this.removeWall(s, 'N');    // moving North
-            if (dy < 0) this.removeWall(s, 'S');    // moving South
+            if (dy > 0 ) {
+                this.removeWall(s, 'N');    // moving North
+                e.setWall('S', true);
+            }
+            if (dy < 0) {
+                this.removeWall(s, 'S');    // moving South
+                e.setWall('N', true);
+            }
         }
         if (dy == 0) {
-            if (dx > 0) this.removeWall(s, 'W');    // moving East
-            if (dx < 0) this.removeWall(s, 'E');    // moving West
+            if (dx > 0) {
+                this.removeWall(s, 'W');    // moving East
+                e.setWall('E', true);
+            }
+            if (dx < 0) {
+                this.removeWall(s, 'E');    // moving West
+                e.setWall('W', true);
+            }
         }
     }
 
-    public Tile randomNeighbour(Tile t) {
-        HashSet<Tile> neighbours = t.getNeighboursSet();
-        int s = neighbours.size();
-        int idx = new Random().nextInt(s);
-        int i = 0;
-        for(Tile n : neighbours)
-        {
-            if (i == idx)
-                return n;
-            i++;
-        }
-        return null;
+    public void setPlayersSign(Character sign, Integer x, Integer y) {
+        map[1 + 2*x][2 + 4*y] = sign;
     }
 
-    public Tile getStartNode() {
-        return start;
-    }
-
-    public Tile getEndNode() {
-        return end;
+    public void removeCharacter(Integer x, Integer y) {
+        map[1 + 2*x][2 + 4*y] = ' ';
     }
 
     @Override
@@ -257,7 +234,7 @@ public class Maze extends Graph {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++)
-                result.append(map[i][j]);    // TODO: show only visited tiles (here or separate method), and show player's position as first letter of name!
+                result.append(map[i][j]);
             result.append('\n');
         }
 
@@ -267,7 +244,7 @@ public class Maze extends Graph {
     public static void main(String[] args) {
         System.out.println("Test Maze generation with DFS...");
 
-        Maze m = new Maze(6);    // Seed set to null results in random seed use. (!)
+        Maze m = new Maze(6);
 
         m.generateMaze();
 

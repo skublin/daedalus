@@ -5,12 +5,17 @@ body {
 }
 
 h1 {
-    color: lime;
-    margin-left: 20px;
+    color: rgba(255, 132, 142, 0.5);
+    margin-left: 24px;
+}
+
+h2 {
+    color: rgba(255, 132, 142, 0.65);
+    padding: 0;
 }
 
 h1:hover {
-    letter-spacing: 5px;
+    letter-spacing: 6px;
 }
 
 #main {
@@ -18,34 +23,35 @@ h1:hover {
 }
 
 #terminalOutput {
-    color: lime;
+    font-family: monospace;
+    color: rgba(255, 132, 142, 0.75);
     padding: 14px;
-    min-height: 300px;
+    min-height: 600px;
     border-radius: 12px;
     white-space: pre-wrap;
-    border: 1px dashed blue;
+    border: 1px dashed rgba(142, 50, 214, 0.8);
     background-color: rgba(0,0,0,0.5);
 }
 
 #terminalInput {
     width: 100%;
-    color: lime;
+    color: rgba(255, 132, 142, 0.7);
     font-size: 24px;
     margin-top: 10px;
     min-height: 30px;
     border-radius: 8px;
     padding-left: 14px;
     box-sizing: border-box;
-    border: 1px dashed blue;
+    border: 1px dashed rgba(142, 50, 214, 0.8);
     background-color: rgba(0,0,0,0.6);
 }
 
 #terminalOutput:hover {
-    border: 1px solid blue;
+    border: 1px solid rgba(142, 50, 214, 0.8);
     background-color: rgba(0,0,0,0.6);
 }
 
 #terminalInput:hover {
-    border: 1px solid blue;
+    border: 1px solid rgba(142, 50, 214, 0.8);
     background-color: rgba(0,0,0,0.65);
 }

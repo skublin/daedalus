@@ -46,6 +46,7 @@ public class Server {
     }
 
     static class CommandHandler implements HttpHandler {
+        CommandProcessor cp = null;
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             if ("POST".equals(exchange.getRequestMethod())) {
@@ -55,7 +56,9 @@ public class Server {
 
                 Command command = new Gson().fromJson(commandJson, Command.class);
 
-                CommandProcessor cp = new CommandProcessor();
+                // CommandProcessor cp = new CommandProcessor(this, exchange);
+                if (cp == null)
+                    cp = new CommandProcessor(this, exchange);
                 String response = cp.processCommand(command.getCommand());
 
                 exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
@@ -77,10 +80,6 @@ public class Server {
 
             public String getCommand() {
                 return command;
-            }
-
-            public void setCommand(String command) {
-                this.command = command;
             }
         }
     }
